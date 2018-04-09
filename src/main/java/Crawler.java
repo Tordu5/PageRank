@@ -1,9 +1,16 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,6 +22,9 @@ public class Crawler {
     private int proccesingCounter = 0;
     private int addedNodesCounter = 0;
     private int maxAllowedNodes;
+    private JsonObject webcrawler = new JsonObject();
+    private JsonArray nodes = new JsonArray();
+    private JsonArray links = new JsonArray();
 
     public Crawler (int maxAllowedNodes) throws SQLException, IOException, ClassNotFoundException {
         this.maxAllowedNodes = maxAllowedNodes;
@@ -33,6 +43,7 @@ public class Crawler {
         while (!workQueue.isEmpty()){
             process(workQueue.poll());
         }
+        writeJsonToFile();
         logger("finished");
     }
 
@@ -88,7 +99,9 @@ public class Crawler {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 }
             }
-
+            if (linkUrl.isEmpty()){
+                continue;
+            }
             urls.add(linkUrl);
         }
 
@@ -103,6 +116,11 @@ public class Crawler {
         createLinkStatement.setInt(1,sourceID);
         createLinkStatement.setInt(2,targetID);
         createLinkStatement.execute();
+
+        JsonObject link = new JsonObject();
+        link.addProperty("source",sourceID);
+        link.addProperty("target",targetID);
+        links.add(link);
     }
 
     /*
@@ -113,6 +131,11 @@ public class Crawler {
         addNewNodeStatement.setString(2, url);				// URL
         addNewNodeStatement.execute();
         addedNodesCounter++;
+
+        JsonObject node = new JsonObject();
+        node.addProperty("id",getID(url));
+        node.addProperty("url",url);
+        nodes.add(node);
     }
 
     /*
@@ -169,5 +192,20 @@ public class Crawler {
 
     private void logger(String msg){
         System.out.println(msg);
+    }
+
+    /*
+    writes to a json file for the vizualisation
+     */
+    public void writeJsonToFile() {
+        webcrawler.add("nodes",nodes);
+        webcrawler.add("links",links);
+
+        try (Writer writer = new FileWriter("./src/main/resources/Webcrawler.json")) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(webcrawler, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
