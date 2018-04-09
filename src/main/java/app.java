@@ -7,7 +7,7 @@ public class app {
 	public static void main(String[] args) {
 
 		try {
-			Crawler crawler = new Crawler();
+			Crawler crawler = new Crawler(20);
 			crawler.startAtSite("https://javabeginners.de/");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

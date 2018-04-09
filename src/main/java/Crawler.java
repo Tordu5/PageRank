@@ -12,16 +12,19 @@ import java.util.Queue;
 public class Crawler {
     private Connection dbConnection;
     private Queue<String> workQueue;
-    private int counter = 0;
+    private int proccesingCounter = 0;
+    private int addedNodesCounter = 0;
+    private int maxAllowedNodes;
 
-    public Crawler () throws SQLException, IOException, ClassNotFoundException {
+    public Crawler (int maxAllowedNodes) throws SQLException, IOException, ClassNotFoundException {
+        this.maxAllowedNodes = maxAllowedNodes;
         getConnection();
         createDatabase();
         workQueue = new LinkedList<>();
     }
 
     public void startAtSite(String url) throws IOException, SQLException {
-        addNodeAndReturnId(url);
+        addNode(url);
         process(url);
         crawl();
     }
@@ -30,34 +33,51 @@ public class Crawler {
         while (!workQueue.isEmpty()){
             process(workQueue.poll());
         }
+        logger("finished");
     }
 
     /*
     search all links on page and for each link create the DB entrys and add them to
     the Queue.
      */
-    private void process(String baseUrl) throws IOException, SQLException {
-        ArrayList<String> embededUrls = getUrls(baseUrl);
-        logger(counter++ +"    :Processing on " + baseUrl);
-        int baseID = getID(baseUrl);
+    private void process(String focusedUrl) throws IOException, SQLException {
+        ArrayList<String> embededUrls = extractUrlsFromSite(focusedUrl);
+        logger(proccesingCounter++ +"    :Processing on " + focusedUrl);
+        int baseID = getID(focusedUrl);
 
         for (String targetUrl: embededUrls){
-            int targetID = addNodeAndReturnId(targetUrl);
-            createLink(baseID,targetID);
-            workQueue.add(targetUrl);
+            if (isUrlAlreadyAdded(targetUrl)){
+                int targetID = getID(targetUrl);
+                createLink(baseID,targetID);
+            } else if (isLimitFullfilled()){
+                continue;
+            } else {
+                addNode(targetUrl);
+                int targetID = getID(targetUrl);
+                createLink(baseID, targetID);
+                workQueue.add(targetUrl);
+            }
         }
     }
 
     /*
     get all urls from url as arraylist of Strings
      */
-    private ArrayList<String> getUrls(String url) throws IOException {
-        Document doc;
-        doc = Jsoup.connect(url).userAgent("Mozilla").get();
+    private ArrayList<String> extractUrlsFromSite(String url) throws IOException {
+        Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
         Elements links = doc.getElementsByTag("a");
+        ArrayList<String> urls = getValidateUrls(doc,links);
+        //logger(urls.size() + " Links on the Side");
+        return urls;
+    }
+
+    /*
+    return Arraylist of URLS
+     */
+    //TODO: validations of URL
+    private ArrayList<String> getValidateUrls(Document doc ,Elements links){
         ArrayList<String> urls = new ArrayList<>();
 
-        // Durchlaufen der Links
         for (Element link : links) {
             String linkUrl = link.attr("href");
 
@@ -71,31 +91,51 @@ public class Crawler {
 
             urls.add(linkUrl);
         }
-        //logger(urls.size() + " Links on the Side");
+
         return urls;
     }
 
     /*
     create a entry in the Link Table
      */
-    private void createLink(int fromID,int toID) throws SQLException {
+    private void createLink(int sourceID,int targetID) throws SQLException {
         PreparedStatement createLinkStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
-        createLinkStatement.setInt(1,fromID);
-        createLinkStatement.setInt(2,toID);
+        createLinkStatement.setInt(1,sourceID);
+        createLinkStatement.setInt(2,targetID);
         createLinkStatement.execute();
     }
 
     /*
-    adds the url as a new node and return its new id
+    adds a node and increase addedNodesCounter
      */
-    private int addNodeAndReturnId(String url) throws SQLException {
+    private void addNode(String url) throws SQLException {
         PreparedStatement addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?);");
         addNewNodeStatement.setString(2, url);				// URL
         addNewNodeStatement.execute();
-        //logger(url + " added");
-        return getID(url);
+        addedNodesCounter++;
     }
 
+    /*
+    checkes if limit of max Nodes is reached
+     */
+    private boolean isLimitFullfilled() {
+        if (addedNodesCounter<maxAllowedNodes){
+            return false;
+        }
+        return true;
+    }
+
+    /*
+    checkes if URL is already added
+     */
+    private boolean isUrlAlreadyAdded(String url) throws SQLException {
+        ResultSet idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url + "'");
+        return idQuery.next();
+    }
+
+    /*
+    returns the Database ID of the given URL
+     */
     private int getID(String url) throws SQLException {
         ResultSet idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url + "'");
         return idQuery.getInt("id");
@@ -112,16 +152,16 @@ public class Crawler {
 
             //DB fuer Links wird erstellt
             dbConnection.createStatement()
-                    .execute("CREATE TABLE Link (id integer, id2 integer, PRIMARY KEY(id, id2), FOREIGN KEY(id) REFERENCES Webcrawler (id), FOREIGN KEY(id2) REFERENCES Webcrawler (id));");
+                    .execute("CREATE TABLE Link (source integer, target integer, PRIMARY KEY(source, target), FOREIGN KEY(source) REFERENCES Webcrawler (id), FOREIGN KEY(target) REFERENCES Webcrawler (id));");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     /*
-    Creating connectioin to Database
+    Creating connection to Database
      */
-    private void getConnection() throws ClassNotFoundException, SQLException, IOException {
+    private void getConnection() throws ClassNotFoundException, SQLException {
         //Erstelle Verbindung zu DB
         Class.forName("org.sqlite.JDBC");
         dbConnection = DriverManager.getConnection("jdbc:sqlite:WebcrawlerData.db");
