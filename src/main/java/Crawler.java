@@ -26,20 +26,20 @@ public class Crawler {
     private JsonArray nodes = new JsonArray();
     private JsonArray links = new JsonArray();
 
-    public Crawler (int maxAllowedNodes) throws SQLException, IOException, ClassNotFoundException {
+    public Crawler (int maxAllowedNodes) throws SQLException, ClassNotFoundException {
         this.maxAllowedNodes = maxAllowedNodes;
         getConnection();
         createDatabase();
         workQueue = new LinkedList<>();
     }
 
-    public void startAtSite(String url) throws IOException, SQLException {
+    public void startAtSite(String url) throws SQLException {
         addNode(url);
         process(url);
         crawl();
     }
 
-    private void crawl() throws IOException, SQLException {
+    private void crawl() throws SQLException {
         while (!workQueue.isEmpty()){
             process(workQueue.poll());
         }
@@ -51,8 +51,16 @@ public class Crawler {
     search all links on page and for each link create the DB entrys and add them to
     the Queue.
      */
-    private void process(String focusedUrl) throws IOException, SQLException {
-        ArrayList<String> embededUrls = extractUrlsFromSite(focusedUrl);
+    private void process(String focusedUrl) throws SQLException {
+        ArrayList<String> embededUrls = null;
+        try {
+            embededUrls = extractUrlsFromSite(focusedUrl);
+        } catch (IOException e) {
+            logger("IOException");
+            //e.printStackTrace();
+            return;
+        }
+
         logger(proccesingCounter++ +"    :Processing on " + focusedUrl);
         int baseID = getID(focusedUrl);
 
@@ -63,10 +71,15 @@ public class Crawler {
             } else if (isLimitFullfilled()){
                 continue;
             } else {
-                addNode(targetUrl);
-                int targetID = getID(targetUrl);
-                createLink(baseID, targetID);
-                workQueue.add(targetUrl);
+                try {
+                    addNode(targetUrl);
+                    int targetID = getID(targetUrl);
+                    createLink(baseID, targetID);
+                    workQueue.add(targetUrl);
+                } catch (SQLException e) {
+                    logger("SQL Exception");
+                    //e.printStackTrace();
+                }
             }
         }
     }
@@ -75,6 +88,7 @@ public class Crawler {
     get all urls from url as arraylist of Strings
      */
     private ArrayList<String> extractUrlsFromSite(String url) throws IOException {
+
         Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
         Elements links = doc.getElementsByTag("a");
         ArrayList<String> urls = getValidateUrls(doc,links);
@@ -127,7 +141,7 @@ public class Crawler {
     adds a node and increase addedNodesCounter
      */
     private void addNode(String url) throws SQLException {
-        PreparedStatement addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?);");
+        PreparedStatement addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?);");
         addNewNodeStatement.setString(2, url);				// URL
         addNewNodeStatement.execute();
         addedNodesCounter++;
@@ -151,9 +165,16 @@ public class Crawler {
     /*
     checkes if URL is already added
      */
-    private boolean isUrlAlreadyAdded(String url) throws SQLException {
-        ResultSet idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url + "'");
-        return idQuery.next();
+    private boolean isUrlAlreadyAdded(String url) {
+        ResultSet idQuery = null;
+        try {
+            idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url+"'");
+            return idQuery.next();
+        } catch (SQLException e) {
+            logger("SQL Exception");
+            //e.printStackTrace();
+        }
+        return false;
     }
 
     /*
@@ -171,7 +192,7 @@ public class Crawler {
         // DB werden erstellt
         try {
             dbConnection.createStatement()
-                    .execute("CREATE TABLE Webcrawler (id integer PRIMARY KEY AUTOINCREMENT UNIQUE, url TEXT UNIQUE);");
+                    .execute("CREATE TABLE Webcrawler (id integer PRIMARY KEY AUTOINCREMENT UNIQUE, url TEXT UNIQUE, Vektor REAL, PageRank REAL);");
 
             //DB fuer Links wird erstellt
             dbConnection.createStatement()

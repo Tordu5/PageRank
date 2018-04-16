@@ -9,13 +9,12 @@ public class app {
 
 	public static void main(String[] args) {
 		try {
-			Crawler crawler = new Crawler(40);
-			crawler.startAtSite("https://javabeginners.de/");
+			Crawler crawler = new Crawler(70);
+			crawler.startAtSite("https://duckduckgo.com/");
+			new PageRank().calculatePageRank();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch (IOException e) {
 			e.printStackTrace();
 		}
 		
