@@ -22,6 +22,7 @@ public class Crawler {
     private int proccesingCounter = 0;
     private int addedNodesCounter = 0;
     private int maxAllowedNodes;
+    private boolean isFilteredFromBadSites = true;
     private JsonObject webcrawler = new JsonObject();
     private JsonArray nodes = new JsonArray();
     private JsonArray links = new JsonArray();
@@ -37,6 +38,7 @@ public class Crawler {
         addNode(url);
         process(url);
         crawl();
+        dbConnection.close();
     }
 
     private void crawl() throws SQLException {
@@ -70,6 +72,10 @@ public class Crawler {
                 createLink(baseID,targetID);
             } else if (isLimitFullfilled()){
                 continue;
+            } else if (isDeadLink(targetUrl) && isFilteredFromBadSites){
+                continue;
+            } else if (hasNoOutgoingLinks(targetUrl) && isFilteredFromBadSites){
+                continue;
             } else {
                 try {
                     addNode(targetUrl);
@@ -82,6 +88,39 @@ public class Crawler {
                 }
             }
         }
+    }
+
+    private boolean isSpiderTrap(String url){
+        try {
+            ArrayList<String>  embeddedUrls = extractUrlsFromSite(url);
+            if (embeddedUrls.isEmpty()){
+                return true;
+            }
+            if (embeddedUrls.get(0).equalsIgnoreCase(url)&&embeddedUrls.size()<2){
+                return true;
+            }
+            return false;
+        } catch (IOException e) {
+            return true;
+        }
+    }
+
+    private boolean isDeadLink(String url){
+        try {
+            Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
+        } catch (IOException e) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasNoOutgoingLinks(String url) {
+        try{
+            return !(extractUrlsFromSite(url).size()>0);
+        } catch (IOException e){
+            return true;
+        }
+
     }
 
     /*
@@ -156,7 +195,7 @@ public class Crawler {
     checkes if limit of max Nodes is reached
      */
     private boolean isLimitFullfilled() {
-        if (addedNodesCounter<maxAllowedNodes){
+        if (addedNodesCounter<=maxAllowedNodes){
             return false;
         }
         return true;

@@ -3,6 +3,9 @@ import java.sql.*;
 public class PageRank {
 
     private static double COMPARE_DELTA = 0.0001;
+    private static double DAMPINGFACTOR = 0.9;
+    private static boolean isCalculationDamped = true;
+    private double  equalDistributionValue;
     public Connection dbConnection;
 
     /*
@@ -31,12 +34,17 @@ public class PageRank {
     set every vektor at the beginning of the calculation to initial value which is 1/amountOfNodes
      */
     private void initializeVector() throws SQLException {
-        int nodesCount = getAmountOfNodes();
-        double initialValue = 1.0/nodesCount;
+        equalDistributionValue = getEqualDistributionValue();
 
         PreparedStatement updateQuery = dbConnection.prepareStatement("Update Webcrawler SET vektor=?,pagerank=0");
-        updateQuery.setDouble(1,initialValue);
+        updateQuery.setDouble(1,equalDistributionValue);
         updateQuery.execute();
+    }
+
+    private double getEqualDistributionValue() throws SQLException {
+        int nodesCount = getAmountOfNodes();
+        double equalDistributionValue = 1.0 / nodesCount;
+        return equalDistributionValue;
     }
 
     /*
@@ -99,21 +107,27 @@ public class PageRank {
         increasePagerankStatement.execute();
     }
 
-    /* Erwies sich vorerst als nicht notwendig
-    private double getVektorValue(int id) throws SQLException {
-        PreparedStatement updateQuery = dbConnection.prepareStatement("SELECT Vektor FROM Webcrawler WHERE id = ?");
-        updateQuery.setInt(1,id);
-        ResultSet result = updateQuery.executeQuery();
-        return result.getDouble("Vektor");
-    }
-    */
-
     /*
     prepare the next calculation round by setting vektor to pagerank and pagerank to 0
      */
     private void prepareNextRound() throws SQLException {
+        if (isCalculationDamped()){
+            dampPageRank();
+        }
         PreparedStatement prepareCalculationStatement = dbConnection.prepareStatement("Update Webcrawler SET vektor=pagerank, pagerank=0");
         prepareCalculationStatement.execute();
+    }
+
+    private boolean isCalculationDamped() {
+        return isCalculationDamped;
+    }
+
+    private void dampPageRank() throws SQLException {
+        PreparedStatement prepareDampStatement = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank*?+?*?");
+        prepareDampStatement.setDouble(1,DAMPINGFACTOR);
+        prepareDampStatement.setDouble(2,getEqualDistributionValue());
+        prepareDampStatement.setDouble(3,1-DAMPINGFACTOR);
+        prepareDampStatement.execute();
     }
 
     /*
