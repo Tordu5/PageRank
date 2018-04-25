@@ -17,20 +17,22 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Crawler {
-    private Connection dbConnection;
+    private DataAccess dbAccess;
+    //private Connection dbConnection;
     private Queue<String> workQueue;
     private int proccesingCounter = 0;
     private int addedNodesCounter = 0;
     private int maxAllowedNodes;
-    private boolean isFilteredFromBadSites = true;
+    private boolean isFilteredFromBadSites = false;
     private JsonObject webcrawler = new JsonObject();
     private JsonArray nodes = new JsonArray();
     private JsonArray links = new JsonArray();
 
     public Crawler (int maxAllowedNodes) throws SQLException, ClassNotFoundException {
+        dbAccess = DataAccess.getAccess();
         this.maxAllowedNodes = maxAllowedNodes;
-        getConnection();
-        createDatabase();
+        //getConnection();
+        //createDatabase();
         workQueue = new LinkedList<>();
     }
 
@@ -38,7 +40,7 @@ public class Crawler {
         addNode(url);
         process(url);
         crawl();
-        dbConnection.close();
+        //dbConnection.close();
     }
 
     private void crawl() throws SQLException {
@@ -165,10 +167,13 @@ public class Crawler {
     create a entry in the Link Table
      */
     private void createLink(int sourceID,int targetID) throws SQLException {
+        /*
         PreparedStatement createLinkStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
         createLinkStatement.setInt(1,sourceID);
         createLinkStatement.setInt(2,targetID);
         createLinkStatement.execute();
+        */
+        dbAccess.createLink(sourceID,targetID);
 
         JsonObject link = new JsonObject();
         link.addProperty("source",sourceID);
@@ -180,10 +185,14 @@ public class Crawler {
     adds a node and increase addedNodesCounter
      */
     private void addNode(String url) throws SQLException {
+        /*
         PreparedStatement addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?);");
         addNewNodeStatement.setString(2, url);				// URL
         addNewNodeStatement.execute();
+        */
+        dbAccess.addNode(url);
         addedNodesCounter++;
+
 
         JsonObject node = new JsonObject();
         node.addProperty("id",getID(url));
@@ -205,28 +214,23 @@ public class Crawler {
     checkes if URL is already added
      */
     private boolean isUrlAlreadyAdded(String url) {
-        ResultSet idQuery = null;
-        try {
-            idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url+"'");
-            return idQuery.next();
-        } catch (SQLException e) {
-            logger("SQL Exception");
-            //e.printStackTrace();
-        }
-        return false;
+        return dbAccess.isNodeAlreadyExisting(url);
     }
 
     /*
     returns the Database ID of the given URL
      */
     private int getID(String url) throws SQLException {
+        /*
         ResultSet idQuery = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url + "'");
         return idQuery.getInt("id");
+        */
+        return dbAccess.getID(url);
     }
 
     /*
     creates the Databases
-     */
+
     private void createDatabase(){
         // DB werden erstellt
         try {
@@ -240,15 +244,17 @@ public class Crawler {
             e.printStackTrace();
         }
     }
+    */
 
     /*
     Creating connection to Database
-     */
+
     private void getConnection() throws ClassNotFoundException, SQLException {
         //Erstelle Verbindung zu DB
         Class.forName("org.sqlite.JDBC");
         dbConnection = DriverManager.getConnection("jdbc:sqlite:WebcrawlerData.db");
     }
+    */
 
     private void logger(String msg){
         System.out.println(msg);
