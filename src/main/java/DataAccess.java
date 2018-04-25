@@ -20,7 +20,8 @@ public class DataAccess {
     private PreparedStatement increasePagerankStatement;
     private PreparedStatement getOutgoingLinksStatement;
     private PreparedStatement countNodesStatement;
-    private PreparedStatement initVektorStatement ;
+    private PreparedStatement initVektorStatement;
+    private PreparedStatement setOutgoingStatement;
     private PreparedStatement vektorSumStatement;
 
     private DataAccess() {
@@ -66,6 +67,7 @@ public class DataAccess {
         getOutgoingLinksStatement = dbConnection.prepareStatement("SELECT * FROM Link WHERE source=?");
         countNodesStatement = dbConnection.prepareStatement("SELECT Count(*) FROM Webcrawler");
         initVektorStatement = dbConnection.prepareStatement("Update Webcrawler SET vektor=?");
+        setOutgoingStatement = dbConnection.prepareStatement("UPDATE Webcrawler SET Outgoing = ? WHERE id=?");
         vektorSumStatement = dbConnection.prepareStatement("SELECT SUM(Vektor) FROM Webcrawler");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -150,6 +152,12 @@ public class DataAccess {
     public void initVektor(Double equalDistributionVektorValue) throws SQLException {
         initVektorStatement.setDouble(1,equalDistributionVektorValue);
         initVektorStatement.execute();
+    }
+
+    public void setOutgoingLinksValue(int outgoing,int id) throws SQLException {
+        setOutgoingStatement.setInt(1,outgoing);
+        setOutgoingStatement.setInt(2,id);
+        setOutgoingStatement.execute();
     }
 
     public double getVektorSum() throws SQLException {

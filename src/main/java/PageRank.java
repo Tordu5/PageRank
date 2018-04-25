@@ -14,8 +14,25 @@ public class PageRank {
      */
     public PageRank() throws SQLException, ClassNotFoundException {
         dbAccess = DataAccess.getAccess();
-        //getConnection();
         initializeVector();
+        initializeOutgoing();
+    }
+
+    /*
+    set every vektor at the beginning of the calculation to initial value which is 1/amountOfNodes
+     */
+    private void initializeVector() throws SQLException {
+        dbAccess.initVektor(getEqualDistributionVektorValue());
+    }
+
+    private void initializeOutgoing() throws SQLException {
+        ResultSet node = dbAccess.getWebcrawlerTable();
+
+        while (node.next()){
+            int id = node.getInt("id");
+            int amountOutgoingLinks = getOutgoingLinksCount(id);
+            dbAccess.setOutgoingLinksValue(amountOutgoingLinks,id);
+        }
     }
 
     /*
@@ -24,11 +41,6 @@ public class PageRank {
     public void calculatePageRank() throws SQLException {
         calculate();
         while (!isCalculationFinished()){
-            //Summe des Vektors Berechnen
-            /*
-            ResultSet result = dbConnection.createStatement().executeQuery("select sum(vektor) From Webcrawler");
-            System.out.println(result.getDouble(1));
-            */
             System.out.println(dbAccess.getVektorSum());
             prepareNextRound();
             calculate();
@@ -36,26 +48,9 @@ public class PageRank {
     }
 
     /*
-    set every vektor at the beginning of the calculation to initial value which is 1/amountOfNodes
-     */
-    private void initializeVector() throws SQLException {
-        /*
-        equalDistributionValue = getEqualDistributionValue();
-        PreparedStatement updateQuery = dbConnection.prepareStatement("Update Webcrawler SET vektor=?,pagerank=0");
-        updateQuery.setDouble(1,equalDistributionValue);
-        updateQuery.execute();
-        */
-        dbAccess.initVektor(getEqualDistributionVektorValue());
-    }
-
-    /*
     count amount of nodes
      */
     public int getAmountOfNodes() throws SQLException {
-        /*
-        ResultSet countNodesStatement = dbConnection.createStatement().executeQuery("SELECT Count(*) AS Count FROM Webcrawler");
-        return countNodesStatement.getInt("Count");
-        */
         return dbAccess.getNodesCount();
     }
 
@@ -64,15 +59,12 @@ public class PageRank {
     increase the pagerank value of the nodes of the outgoing links
      */
     public void calculate() throws SQLException {
-        /*
-        PreparedStatement nodesQuery = dbConnection.prepareStatement("SELECT * FROM Webcrawler");
-        ResultSet node = nodesQuery.executeQuery();
-        */
         ResultSet nodes = dbAccess.getWebcrawlerTable();
         while (nodes.next()){
             int id = nodes.getInt("id");
             double vektor = nodes.getDouble("Vektor");
-            int outgoingLinksCount = getOutgoingLinksCount(id);
+            //int outgoingLinksCount = getOutgoingLinksCount(id);
+            int outgoingLinksCount = nodes.getInt("Outgoing");
             double increasingValue = vektor/outgoingLinksCount;
             increaseOutgoingLinksByValue(id,increasingValue);
         }
@@ -83,13 +75,6 @@ public class PageRank {
     }
 
     private void dampPageRank() throws SQLException {
-        /*
-        PreparedStatement prepareDampStatement = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank*?+?*?");
-        prepareDampStatement.setDouble(1,DAMPINGFACTOR);
-        prepareDampStatement.setDouble(2,getEqualDistributionValue());
-        prepareDampStatement.setDouble(3,1-DAMPINGFACTOR);
-        prepareDampStatement.execute();
-        */
         dbAccess.dampPageRank(DAMPINGFACTOR,equalDistributionValue);
     }
 
@@ -97,12 +82,6 @@ public class PageRank {
     get amount of outgoing links for the specified sourceId
      */
     private int getOutgoingLinksCount(int sourceId) throws SQLException {
-        /*
-        PreparedStatement countOutgoingLinksStatement = dbConnection.prepareStatement("SELECT Count(*) AS COUNT FROM Link WHERE source = ?");
-        countOutgoingLinksStatement.setInt(1,sourceId);
-        ResultSet result = countOutgoingLinksStatement.executeQuery();
-        return result.getInt("Count");
-        */
         return dbAccess.countOutgoingLinks(sourceId);
     }
 
@@ -110,11 +89,6 @@ public class PageRank {
     get all outgoing links and increase the value of the Pagerank of the connected nodes
      */
     private void increaseOutgoingLinksByValue(int sourceId,double value) throws SQLException {
-        /*
-        PreparedStatement outgoingLinksQuery = dbConnection.prepareStatement("SELECT * FROM Link WHERE source=?");
-        outgoingLinksQuery.setInt(1,sourceId);
-        ResultSet outgoingLink = outgoingLinksQuery.executeQuery();
-        */
         ResultSet outgoingLink = dbAccess.getOutgoingLinks(sourceId);
 
         while (outgoingLink.next()){
@@ -127,12 +101,6 @@ public class PageRank {
     increases the pageranke of a specified node by the given value
      */
     private void increasePagerankByValue(int targetId,double increasingValue) throws SQLException {
-        /*
-        PreparedStatement increasePagerankStatement = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank+? WHERE id=?");
-        increasePagerankStatement.setDouble(1,value);
-        increasePagerankStatement.setInt(2,targetId);
-        increasePagerankStatement.execute();
-        */
         dbAccess.increasePageRank(increasingValue,targetId);
     }
 
@@ -140,11 +108,6 @@ public class PageRank {
     prepare the next calculation round by setting vektor to pagerank and pagerank to 0
      */
     private void prepareNextRound() throws SQLException {
-
-        /*
-        PreparedStatement prepareCalculationStatement = dbConnection.prepareStatement("Update Webcrawler SET vektor=pagerank, pagerank=0");
-        prepareCalculationStatement.execute();
-        */
         dbAccess.prepareCalculation();
     }
 
@@ -156,10 +119,6 @@ public class PageRank {
     check every node if the vektor and pagerank are similar, if not it returns false by the first node which dont fit
      */
     private boolean isCalculationFinished() throws SQLException {
-        /*
-        PreparedStatement nodesQuery = dbConnection.prepareStatement("SELECT * FROM Webcrawler");
-        ResultSet node = nodesQuery.executeQuery();
-        */
         ResultSet node = dbAccess.getWebcrawlerTable();
         while (node.next()){
             if (!isPageRankSimilarToVektor(node)){
@@ -182,15 +141,6 @@ public class PageRank {
         }
     }
 
-    /*
-    connection to database
-
-    private void getConnection() throws ClassNotFoundException, SQLException {
-        //Erstelle Verbindung zu DB
-        Class.forName("org.sqlite.JDBC");
-        dbConnection = DriverManager.getConnection("jdbc:sqlite:WebcrawlerData.db");
-    }
-    */
     private double getEqualDistributionVektorValue() throws SQLException {
         if (equalDistributionValue==null){
             equalDistributionValue = (1.0/dbAccess.getNodesCount());

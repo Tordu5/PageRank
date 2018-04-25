@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="17fb2d2c-b36f-48fb-96f5-4af05a1fa945" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/DataAccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Crawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Crawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/DataAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DataAccess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/PageRank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/PageRank.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/Webcrawler.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Webcrawler.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -34,28 +35,34 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/app.java">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="11" column="44" selection-start-line="11" selection-start-column="44" selection-end-line="11" selection-end-column="44" />
+            <state relative-caret-position="68">
+              <caret line="4" column="5" lean-forward="true" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Crawler.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="app.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/app.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Crawler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/Crawler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="25" column="50" selection-start-line="25" selection-start-column="50" selection-end-line="25" selection-end-column="50" />
+            <state relative-caret-position="3349">
+              <caret line="213" column="6" lean-forward="true" selection-start-line="213" selection-start-column="6" selection-end-line="213" selection-end-column="6" />
               <folding>
-                <element signature="e#6501#6502#0" expanded="true" />
-                <element signature="e#6559#6560#0" expanded="true" />
+                <element signature="e#6537#6538#0" expanded="true" />
+                <element signature="e#6595#6596#0" expanded="true" />
                 <element signature="e#7942#7943#0" expanded="true" />
                 <element signature="e#7981#7982#0" expanded="true" />
-                <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-                <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-                <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
               </folding>
             </state>
           </provider>
@@ -64,21 +71,21 @@
       <file leaf-file-name="PageRank.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/PageRank.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="23" column="53" lean-forward="true" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
+            <state>
+              <caret line="125" column="13" lean-forward="true" selection-start-line="125" selection-start-column="13" selection-end-line="125" selection-end-column="13" />
               <folding>
-                <element signature="e#5185#5186#0" expanded="true" />
-                <element signature="e#5227#5228#0" expanded="true" />
+                <element signature="e#3514#3515#0" expanded="true" />
+                <element signature="e#3556#3557#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DataAccess.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DataAccess.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DataAccess.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1689">
-              <caret line="28" column="29" selection-start-line="28" selection-start-column="29" selection-end-line="28" selection-end-column="29" />
+            <state relative-caret-position="340">
+              <caret line="183" column="34" lean-forward="true" selection-start-line="183" selection-start-column="34" selection-end-line="183" selection-end-column="34" />
               <folding>
                 <element signature="method#getWebcrawlerTable#0;class#DataAccess#0" />
                 <element signature="method#getLinkTable#0;class#DataAccess#0" />
@@ -117,6 +124,7 @@
       <find>logger</find>
       <find>catch</find>
       <find>system</find>
+      <find>initOutgoingStatement</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -418,10 +426,10 @@
         <option value="$PROJECT_DIR$/src/main/resources/Webcrawler.json" />
         <option value="$PROJECT_DIR$/src/main/java/CrawlerPageRank.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/main/java/PageRank.java" />
+        <option value="$PROJECT_DIR$/src/main/java/Crawler.java" />
         <option value="$PROJECT_DIR$/src/main/java/DataAccess.java" />
         <option value="$PROJECT_DIR$/src/main/java/app.java" />
-        <option value="$PROJECT_DIR$/src/main/java/Crawler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/PageRank.java" />
       </list>
     </option>
   </component>
@@ -622,7 +630,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="92993000" />
+    <option name="totallyTimeSpent" value="97062000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1513" height="973" extended-state="6" />
@@ -644,6 +652,7 @@
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15051547" />
       <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32938388" />
       <window_info anchor="right" id="Gradle" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -651,13 +660,35 @@
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.32696897" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Build" order="7" visible="true" weight="0.32898173" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15051547" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.32819906" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.32696897" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32976827" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info anchor="right" id="Database" order="3" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="UI Designer" order="2" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.31516588" />
+      <window_info active="true" anchor="bottom" id="Build" order="7" visible="true" weight="0.32898173" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32819906" />
+      <window_info anchor="right" id="Gradle" order="3" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info id="Designer" order="2" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -672,13 +703,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/app.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1518">
@@ -698,13 +722,10 @@
         <state relative-caret-position="6732">
           <caret line="204" column="61" selection-start-line="204" selection-start-column="61" selection-end-line="204" selection-end-column="61" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -728,13 +749,10 @@
         <state relative-caret-position="594">
           <caret line="18" column="25" lean-forward="true" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -758,13 +776,10 @@
         <state relative-caret-position="3201">
           <caret line="106" column="34" lean-forward="true" selection-start-line="106" selection-start-column="34" selection-end-line="106" selection-end-column="34" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -788,13 +803,10 @@
         <state relative-caret-position="4389">
           <caret line="133" lean-forward="true" selection-start-line="133" selection-end-line="133" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -841,13 +853,10 @@
         <state relative-caret-position="514">
           <caret line="179" column="21" selection-start-line="179" selection-start-column="21" selection-end-line="179" selection-end-column="21" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -871,13 +880,10 @@
         <state relative-caret-position="594">
           <caret line="18" column="25" lean-forward="true" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -901,13 +907,10 @@
         <state relative-caret-position="3201">
           <caret line="106" column="34" lean-forward="true" selection-start-line="106" selection-start-column="34" selection-end-line="106" selection-end-column="34" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -931,13 +934,10 @@
         <state relative-caret-position="4389">
           <caret line="133" lean-forward="true" selection-start-line="133" selection-end-line="133" />
           <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
             <element signature="e#7942#7943#0" expanded="true" />
             <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
@@ -1017,10 +1017,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="7" selection-start-line="1" selection-start-column="7" selection-end-line="1" selection-end-column="7" />
+        <state relative-caret-position="68">
+          <caret line="4" column="5" lean-forward="true" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/app.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -1033,19 +1043,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/PageRank.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="53" lean-forward="true" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
+        <state>
+          <caret line="125" column="13" lean-forward="true" selection-start-line="125" selection-start-column="13" selection-end-line="125" selection-end-column="13" />
           <folding>
-            <element signature="e#5185#5186#0" expanded="true" />
-            <element signature="e#5227#5228#0" expanded="true" />
+            <element signature="e#3514#3515#0" expanded="true" />
+            <element signature="e#3556#3557#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Crawler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3349">
+          <caret line="213" column="6" lean-forward="true" selection-start-line="213" selection-start-column="6" selection-end-line="213" selection-end-column="6" />
+          <folding>
+            <element signature="e#6537#6538#0" expanded="true" />
+            <element signature="e#6595#6596#0" expanded="true" />
+            <element signature="e#7942#7943#0" expanded="true" />
+            <element signature="e#7981#7982#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/DataAccess.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1689">
-          <caret line="28" column="29" selection-start-line="28" selection-start-column="29" selection-end-line="28" selection-end-column="29" />
+        <state relative-caret-position="340">
+          <caret line="183" column="34" lean-forward="true" selection-start-line="183" selection-start-column="34" selection-end-line="183" selection-end-column="34" />
           <folding>
             <element signature="method#getWebcrawlerTable#0;class#DataAccess#0" />
             <element signature="method#getLinkTable#0;class#DataAccess#0" />
@@ -1055,29 +1078,6 @@
             <element signature="method#getOutgoingLinks#0;class#DataAccess#0" />
             <element signature="method#getNodesCount#0;class#DataAccess#0" />
             <element signature="method#getVektorSum#0;class#DataAccess#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/app.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="11" column="44" selection-start-line="11" selection-start-column="44" selection-end-line="11" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Crawler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="25" column="50" selection-start-line="25" selection-start-column="50" selection-end-line="25" selection-end-column="50" />
-          <folding>
-            <element signature="e#6501#6502#0" expanded="true" />
-            <element signature="e#6559#6560#0" expanded="true" />
-            <element signature="e#7942#7943#0" expanded="true" />
-            <element signature="e#7981#7982#0" expanded="true" />
-            <marker date="1524662335440" expanded="true" signature="6798:6845" ph="SELECT id FR... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7126:7240" ph="CREATE TABLE... Webcrawler" />
-            <marker date="1524662335440" expanded="true" signature="7361:7536" ph="CREATE TABLE... Link" />
           </folding>
         </state>
       </provider>
