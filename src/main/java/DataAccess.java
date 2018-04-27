@@ -8,6 +8,7 @@ public class DataAccess {
     //Crawler
     private PreparedStatement addNewNodeStatement;
     private PreparedStatement createLinkStatement;
+    private PreparedStatement createLinkStatementBatch;
     private PreparedStatement findIdForUrlStatement;
     private PreparedStatement increaseOutgoingStatement;
 
@@ -18,6 +19,7 @@ public class DataAccess {
     private PreparedStatement prepareDampStatement;
     private PreparedStatement prepareCalculationStatement;
     private PreparedStatement increasePagerankStatement;
+    private PreparedStatement increasePagerankStatementBatch;
     private PreparedStatement getOutgoingLinksStatement;
     private PreparedStatement countNodesStatement;
     private PreparedStatement initVektorStatement;
@@ -43,6 +45,10 @@ public class DataAccess {
         return access;
     }
 
+    public Connection getConnection(){
+        return dbConnection;
+    }
+
     private void createConnection() throws ClassNotFoundException, SQLException {
         //Erstelle Verbindung zu DB
         Class.forName("org.sqlite.JDBC");
@@ -53,8 +59,9 @@ public class DataAccess {
         try {
         //Crawler
         findIdForUrlStatement = dbConnection.prepareStatement("SELECT id FROM Webcrawler WHERE url=?");
-        addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?,?);");
+        addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
         createLinkStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
+        createLinkStatementBatch = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
         increaseOutgoingStatement = dbConnection.prepareStatement("UPDATE Webcrawler SET Outgoing = Outgoing+1 WHERE id=?");
 
         //Pagerank
@@ -64,6 +71,7 @@ public class DataAccess {
         prepareDampStatement = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank*?+?*?");
         prepareCalculationStatement = dbConnection.prepareStatement("Update Webcrawler SET vektor=pagerank, pagerank=0");
         increasePagerankStatement = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank+? WHERE id=?");
+        increasePagerankStatementBatch = dbConnection.prepareStatement("Update Webcrawler SET pagerank=pagerank+? WHERE id=?");
         getOutgoingLinksStatement = dbConnection.prepareStatement("SELECT * FROM Link WHERE source=?");
         countNodesStatement = dbConnection.prepareStatement("SELECT Count(*) FROM Webcrawler");
         initVektorStatement = dbConnection.prepareStatement("Update Webcrawler SET vektor=?");
@@ -88,20 +96,38 @@ public class DataAccess {
     public int getID(String url) throws SQLException {
         findIdForUrlStatement.setString(1,url);
         return findIdForUrlStatement.executeQuery().getInt(1);
+        //return dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url+"'").getInt(1);
     }
 
-    public void addNode(String url) throws SQLException {
+    public int addNode(String url) throws SQLException {
         addNewNodeStatement.setString(2,url);
         addNewNodeStatement.setInt(3,0);
         addNewNodeStatement.setDouble(4,0);
         addNewNodeStatement.setDouble(5,0);
         addNewNodeStatement.execute();
+        int id = addNewNodeStatement.getGeneratedKeys().getInt(1);
+        return id;
     }
 
     public void createLink(int sourceID, int targetID) throws SQLException {
         createLinkStatement.setInt(1,sourceID);
         createLinkStatement.setInt(2,targetID);
         createLinkStatement.execute();
+    }
+
+    public void createLinkBatch(int sourceID, int targetID) throws SQLException {
+        createLinkStatementBatch.setInt(1,sourceID);
+        createLinkStatementBatch.setInt(2,targetID);
+        createLinkStatementBatch.addBatch();
+    }
+
+    public void executeLinkBatch() {
+        try {
+            createLinkStatementBatch.executeBatch();
+            createLinkStatementBatch.clearBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void increaseOutgoing(int id) throws SQLException {
@@ -138,6 +164,21 @@ public class DataAccess {
         increasePagerankStatement.setDouble(1,increasingValue);
         increasePagerankStatement.setInt(2,targetID);
         increasePagerankStatement.execute();
+    }
+
+    public void increasePageRankBatch(double increasingValue,int targetID) throws SQLException {
+        increasePagerankStatementBatch.setDouble(1,increasingValue);
+        increasePagerankStatementBatch.setInt(2,targetID);
+        increasePagerankStatementBatch.addBatch();
+    }
+
+    public void executePagerankBatch(){
+        try {
+            increasePagerankStatementBatch.executeBatch();
+            increasePagerankStatementBatch.clearBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public ResultSet getOutgoingLinks(int sourceID) throws SQLException {

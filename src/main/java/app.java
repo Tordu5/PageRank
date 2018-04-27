@@ -8,6 +8,7 @@ import java.sql.SQLException;
 public class app {
 
 	public static void main(String[] args) {
+
 		try {
 			Crawler crawler = new Crawler(160);
 			crawler.startAtSite("https://duckduckgo.com/");
@@ -17,6 +18,9 @@ public class app {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+
+		//new Master("https://duckduckgo.com/",4);
 
 	}
 

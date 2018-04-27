@@ -56,50 +56,44 @@ public class Crawler {
         try {
             embededUrls = extractUrlsFromSite(focusedUrl);
         } catch (IOException e) {
-            logger("IOException");
-            //e.printStackTrace();
+            logger("IOException : " + e.getMessage() + " on Site : " + focusedUrl);
             return;
         }
 
         logger(proccesingCounter++ +"    :Processing on " + focusedUrl);
         int baseID = getID(focusedUrl);
-
+        int targetID=0;
         for (String targetUrl: embededUrls){
-            if (isUrlAlreadyAdded(targetUrl)){
-                int targetID = getID(targetUrl);
-                createLink(baseID,targetID);
-            } else if (isLimitFullfilled()){
-                continue;
-            } else if (isDeadLink(targetUrl) && isFilteredFromBadSites){
-                continue;
-            } else if (hasNoOutgoingLinks(targetUrl) && isFilteredFromBadSites){
-                continue;
-            } else {
-                try {
-                    addNode(targetUrl);
-                    int targetID = getID(targetUrl);
-                    createLink(baseID, targetID);
-                    workQueue.add(targetUrl);
-                } catch (SQLException e) {
-                    logger("SQL Exception");
+            if (isFilteredFromBadSites){
+                if (isUrlNotConform(targetUrl)){
+                    continue;
                 }
             }
+
+            if (!isUrlAlreadyAdded(targetUrl)){
+                if (isLimitFullfilled()){
+                    continue;
+                }
+                targetID = addNode(targetUrl);
+                workQueue.add(targetUrl);
+            }
+            if (targetID==0){
+                targetID = getID(targetUrl);
+            }
+            //createLink(baseID,targetID);
+            createLinkBatch(baseID, targetID);
         }
+
+        dbAccess.executeLinkBatch();
     }
 
-    private boolean isSpiderTrap(String url){
-        try {
-            ArrayList<String>  embeddedUrls = extractUrlsFromSite(url);
-            if (embeddedUrls.isEmpty()){
-                return true;
-            }
-            if (embeddedUrls.get(0).equalsIgnoreCase(url)&&embeddedUrls.size()<2){
-                return true;
-            }
-            return false;
-        } catch (IOException e) {
+    private boolean isUrlNotConform(String targetUrl) {
+        if (isDeadLink(targetUrl)){
+            return true;
+        } else if (hasNoOutgoingLinks(targetUrl)){
             return true;
         }
+        return false;
     }
 
     private boolean isDeadLink(String url){
@@ -117,15 +111,13 @@ public class Crawler {
         } catch (IOException e){
             return true;
         }
-
     }
 
     /*
     get all urls from url as arraylist of Strings
      */
     private ArrayList<String> extractUrlsFromSite(String url) throws IOException {
-
-        Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
+        Document doc = Jsoup.connect(url).ignoreHttpErrors(true).userAgent("Mozilla").get();
         Elements links = doc.getElementsByTag("a");
         ArrayList<String> urls = getValidateUrls(doc,links);
         return urls;
@@ -148,7 +140,7 @@ public class Crawler {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 }
             }
-            if (linkUrl.isEmpty()){
+            if (linkUrl.isEmpty() || linkUrl.contains(" ") || linkUrl.contains("void(0)")){
                 continue;
             }
             urls.add(linkUrl);
@@ -168,19 +160,28 @@ public class Crawler {
         link.addProperty("target",targetID);
         links.add(link);
     }
+    private void createLinkBatch(int sourceID,int targetID) throws SQLException {
+        dbAccess.createLinkBatch(sourceID,targetID);
+
+        JsonObject link = new JsonObject();
+        link.addProperty("source",sourceID);
+        link.addProperty("target",targetID);
+        links.add(link);
+    }
 
     /*
     adds a node and increase addedNodesCounter
      */
-    private void addNode(String url) throws SQLException {
-        dbAccess.addNode(url);
+    private int addNode(String url) throws SQLException {
+        int urlID = dbAccess.addNode(url);
         addedNodesCounter++;
 
-
         JsonObject node = new JsonObject();
-        node.addProperty("id",getID(url));
+        node.addProperty("id",urlID);
         node.addProperty("url",url);
         nodes.add(node);
+
+        return urlID;
     }
 
     /*

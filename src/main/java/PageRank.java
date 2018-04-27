@@ -95,6 +95,7 @@ public class PageRank {
             int targetId = outgoingLink.getInt("target");
             increasePagerankByValue(targetId,value);
         }
+        //dbAccess.executePagerankBatch();
     }
 
     /*
@@ -102,6 +103,7 @@ public class PageRank {
      */
     private void increasePagerankByValue(int targetId,double increasingValue) throws SQLException {
         dbAccess.increasePageRank(increasingValue,targetId);
+        //dbAccess.increasePageRankBatch(increasingValue,targetId);
     }
 
     /*
