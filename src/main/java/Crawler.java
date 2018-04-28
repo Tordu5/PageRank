@@ -61,8 +61,7 @@ public class Crawler {
         }
 
         logger(proccesingCounter++ +"    :Processing on " + focusedUrl);
-        int baseID = getID(focusedUrl);
-        int targetID=0;
+        int sourceID = getID(focusedUrl);
         for (String targetUrl: embededUrls){
             if (isFilteredFromBadSites){
                 if (isUrlNotConform(targetUrl)){
@@ -70,6 +69,20 @@ public class Crawler {
                 }
             }
 
+            int targetID = getID(targetUrl);
+            if (targetID  == 0){
+                if (isLimitFullfilled()){
+                    continue;
+                }
+                targetID  = addNode(targetUrl);
+                workQueue.add(targetUrl);
+            }
+            createLink(sourceID,targetID);
+
+
+            /*
+
+            int targetID = 0 ;
             if (!isUrlAlreadyAdded(targetUrl)){
                 if (isLimitFullfilled()){
                     continue;
@@ -80,11 +93,13 @@ public class Crawler {
             if (targetID==0){
                 targetID = getID(targetUrl);
             }
-            //createLink(baseID,targetID);
-            createLinkBatch(baseID, targetID);
+            createLink(sourceID,targetID);
+            //createLinkBatch(baseID, targetID);
+            */
+
         }
 
-        dbAccess.executeLinkBatch();
+        //dbAccess.executeLinkBatch();
     }
 
     private boolean isUrlNotConform(String targetUrl) {
@@ -133,15 +148,15 @@ public class Crawler {
         for (Element link : links) {
             String linkUrl = link.attr("href");
 
+            if (linkUrl.isEmpty() || linkUrl.contains(" ") || linkUrl.contains("void(0)")){
+                continue;
+            }
             if (linkUrl.length() > 0) {
                 if (linkUrl.length() < 4) {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 } else if (!linkUrl.substring(0, 4).equals("http")) {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 }
-            }
-            if (linkUrl.isEmpty() || linkUrl.contains(" ") || linkUrl.contains("void(0)")){
-                continue;
             }
             urls.add(linkUrl);
         }
@@ -205,7 +220,8 @@ public class Crawler {
     returns the Database ID of the given URL
      */
     private int getID(String url) throws SQLException {
-        return dbAccess.getID(url);
+        int id = dbAccess.getID(url);
+        return id;
     }
 
     private void logger(String msg){

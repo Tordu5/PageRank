@@ -95,8 +95,14 @@ public class DataAccess {
 
     public int getID(String url) throws SQLException {
         findIdForUrlStatement.setString(1,url);
-        return findIdForUrlStatement.executeQuery().getInt(1);
-        //return dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url+"'").getInt(1);
+        ResultSet idResultSet = findIdForUrlStatement.executeQuery();
+        //ResultSet idResultSet = dbConnection.createStatement().executeQuery("SELECT id FROM Webcrawler WHERE url='"+url+"'");
+        if (idResultSet.next()){
+            return idResultSet.getInt("id");
+        } else {
+            return 0;
+        }
+
     }
 
     public int addNode(String url) throws SQLException {

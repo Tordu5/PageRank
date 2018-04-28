@@ -13,6 +13,7 @@ public class PageRank {
     connect to database and initialize vektor of every node with 1/amountOfNodes
      */
     public PageRank() throws SQLException, ClassNotFoundException {
+
         dbAccess = DataAccess.getAccess();
         initializeVector();
         initializeOutgoing();

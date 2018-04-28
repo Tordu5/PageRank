@@ -9,15 +9,21 @@ public class app {
 
 	public static void main(String[] args) {
 
+
 		try {
-			Crawler crawler = new Crawler(160);
+			long startTime = System.currentTimeMillis();
+			Crawler crawler = new Crawler(40);
 			crawler.startAtSite("https://duckduckgo.com/");
-			new PageRank().calculatePageRank();
+			//new PageRank().calculatePageRank();
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			System.out.println(elapsedTime);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 
 
 		//new Master("https://duckduckgo.com/",4);
