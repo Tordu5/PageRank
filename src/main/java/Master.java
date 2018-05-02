@@ -26,7 +26,7 @@ public class Master {
     private void createThreads(int threadCount) {
         threadList = new ArrayList<>();
         for (int i=0;i<threadCount;i++){
-            Worker worker = new Worker(workQueue);
+            Worker worker = new Worker("Thread " + i ,workQueue);
             threadList.add(worker);
             worker.start();
         }

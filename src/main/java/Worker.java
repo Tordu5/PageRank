@@ -10,14 +10,17 @@ import java.util.Queue;
 
 public class Worker extends Thread {
     Queue<String> workingQueue;
-    int maxNodes = 150;
+    boolean isFilteredFromBadSites = false;
+    int maxNodes = 500;
     int addedNodesCounter=0;
     int emptyPollsCounter=0;
-    DataAccess dbAccess;
+    String name;
+    SQLCrawlerStatements SQLCrawlerStatements;
 
-    public Worker(Queue<String> workingQueue){
+    public Worker(String name,Queue<String> workingQueue){
         this.workingQueue = workingQueue;
-        dbAccess = DataAccess.getAccess();
+        SQLCrawlerStatements = new SQLCrawlerStatements();
+        this.name = name;
     }
 
     @Override
@@ -32,15 +35,14 @@ public class Worker extends Thread {
                     e.printStackTrace();
                 }
                 emptyPollsCounter++;
-                if (emptyPollsCounter == 15){
+                if (emptyPollsCounter == 5){
                     return;
                 }
             } else {
-                System.out.println("crawl");
                 try {
                     crawl(url);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
@@ -48,48 +50,55 @@ public class Worker extends Thread {
 
     private void crawl(String url) throws SQLException {
         ArrayList<String> linksList = null;
-        int sourceID = dbAccess.getID(url);
+        int sourceID = SQLCrawlerStatements.getID(url);
+        logger(" proccessing on :   ["+sourceID+"]  " + url);
         try {
             linksList = extractUrlsFromSite(url);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
-        for (String link : linksList){
-            if (isLinkInvalid(link)){
-                continue;
-            }
-            if (isLinkAlreadyAdded(link)){
-                int targetID = dbAccess.getID(link);
-                //createLink(sourceID,targetID);
-                createLinkBatch(sourceID,targetID);
-
-            }else {
-                int targetID = addNode(link);
-                //createLink(sourceID,targetID);
-                createLinkBatch(sourceID,targetID);
+        for (String targetUrl : linksList){
+            if (isFilteredFromBadSites){
+                if (isLinkInvalid(targetUrl)){
+                    continue;
+                }
             }
 
+            int targetID = getID(targetUrl);
+            if (targetID  == 0){
+                if (isLimitFullfilled()){
+                    continue;
+                }
+                targetID  = addNode(targetUrl);
+            }
+            createLink(sourceID,targetID);
+
 
         }
-        dbAccess.executeLinkBatch();
+        SQLCrawlerStatements.executeLinkBatch();
     }
 
     private boolean isLinkAlreadyAdded(String link) {
-        return dbAccess.isNodeAlreadyExisting(link);
+        return SQLCrawlerStatements.isNodeAlreadyExisting(link);
     }
 
     private void createLinkBatch(int sourceID,int targetID){
         try {
-            dbAccess.createLinkBatch(sourceID,targetID);
+            SQLCrawlerStatements.createLinkBatch(sourceID,targetID);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("SQL EXCEPTION createLink");
         }
     }
 
+    private void executeLinkBatch(){
+        SQLCrawlerStatements.executeLinkBatch();
+    }
+
     private void createLink(int sourceID,int targetID){
         try {
-            dbAccess.createLink(sourceID,targetID);
+            SQLCrawlerStatements.createLink(sourceID,targetID);
+            //logger("Link :  " + sourceID + "->" + targetID + "    added");
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("SQL EXCEPTION createLink");
@@ -97,9 +106,10 @@ public class Worker extends Thread {
     }
 
     private int addNode(String link) throws SQLException {
-            int id = dbAccess.addNode(link);
+            int id = SQLCrawlerStatements.addNode(link);
             addedNodesCounter++;
             workingQueue.offer(link);
+            //logger("Node :  " + link + "    added");
             return id;
     }
 
@@ -125,10 +135,28 @@ public class Worker extends Thread {
     }
 
     private ArrayList<String> extractUrlsFromSite(String url) throws IOException {
-        Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
+        Document doc = Jsoup.connect(url).ignoreHttpErrors(true).userAgent("Mozilla").get();
         Elements links = doc.getElementsByTag("a");
         ArrayList<String> urls = getValidateUrls(doc,links);
         return urls;
+    }
+
+    /*
+    checkes if limit of max Nodes is reached
+     */
+    private boolean isLimitFullfilled() {
+        if (addedNodesCounter<=maxNodes){
+            return false;
+        }
+        return true;
+    }
+
+    /*
+    returns the Database ID of the given URL
+     */
+    private int getID(String url) throws SQLException {
+        int id = SQLCrawlerStatements.getID(url);
+        return id;
     }
 
     private ArrayList<String> getValidateUrls(Document doc ,Elements links){
@@ -144,12 +172,16 @@ public class Worker extends Thread {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 }
             }
-            if (linkUrl.isEmpty()||linkUrl.contains(" ")){
+            if (linkUrl.isEmpty()||linkUrl.contains(" ")||linkUrl.contains("void(0);")){
                 continue;
             }
             urls.add(linkUrl);
         }
 
         return urls;
+    }
+
+    private void logger(String msg){
+        System.out.println(name + " : " +msg);
     }
 }
