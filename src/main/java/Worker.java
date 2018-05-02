@@ -7,26 +7,28 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 public class Worker extends Thread {
     Queue<String> workingQueue;
+    BlockingQueue<String> blockingWorkQueue;
     boolean isFilteredFromBadSites = false;
-    int maxNodes = 500;
+    int maxNodes = 125;
     int addedNodesCounter=0;
     int emptyPollsCounter=0;
     String name;
     SQLCrawlerStatements SQLCrawlerStatements;
 
-    public Worker(String name,Queue<String> workingQueue){
-        this.workingQueue = workingQueue;
+    public Worker(String name,BlockingQueue<String> blockingWorkQueue){
+        this.blockingWorkQueue = blockingWorkQueue;
         SQLCrawlerStatements = new SQLCrawlerStatements();
         this.name = name;
     }
 
     @Override
     public void run() {
-        while(!workingQueue.isEmpty()||addedNodesCounter<=maxNodes){
-            String url = workingQueue.poll();
+        while(!blockingWorkQueue.isEmpty()||addedNodesCounter<=maxNodes){
+            String url = blockingWorkQueue.poll();
             if (url==null){
                 try {
                     System.out.println("Sleep");
@@ -57,25 +59,27 @@ public class Worker extends Thread {
         } catch (IOException e) {
             //e.printStackTrace();
         }
-        for (String targetUrl : linksList){
-            if (isFilteredFromBadSites){
-                if (isLinkInvalid(targetUrl)){
-                    continue;
+        if (linksList!=null) {
+            for (String targetUrl : linksList) {
+                if (isFilteredFromBadSites) {
+                    if (isLinkInvalid(targetUrl)) {
+                        continue;
+                    }
                 }
-            }
 
-            int targetID = getID(targetUrl);
-            if (targetID  == 0){
-                if (isLimitFullfilled()){
-                    continue;
+                int targetID = getID(targetUrl);
+                if (targetID == 0) {
+                    if (isLimitFullfilled()) {
+                        continue;
+                    }
+                    targetID = addNode(targetUrl);
                 }
-                targetID  = addNode(targetUrl);
+                createLink(sourceID, targetID);
+
+
             }
-            createLink(sourceID,targetID);
-
-
+            SQLCrawlerStatements.executeLinkBatch();
         }
-        SQLCrawlerStatements.executeLinkBatch();
     }
 
     private boolean isLinkAlreadyAdded(String link) {
@@ -108,7 +112,7 @@ public class Worker extends Thread {
     private int addNode(String link) throws SQLException {
             int id = SQLCrawlerStatements.addNode(link);
             addedNodesCounter++;
-            workingQueue.offer(link);
+            blockingWorkQueue.offer(link);
             //logger("Node :  " + link + "    added");
             return id;
     }
