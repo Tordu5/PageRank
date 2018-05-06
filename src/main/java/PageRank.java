@@ -8,6 +8,8 @@ public class PageRank {
     private DataAccess dbAccess;
     private Double  equalDistributionValue;
     public Connection dbConnection;
+    private final Timestamp START = new Timestamp(System.currentTimeMillis());
+    private Timestamp time = new Timestamp(System.currentTimeMillis());
 
     /*
     connect to database and initialize vektor of every node with 1/amountOfNodes
@@ -42,9 +44,14 @@ public class PageRank {
         calculate();
         while (!isCalculationFinished()){
             System.out.println(dbAccess.getVektorSum());
+            time.setTime(System.currentTimeMillis());
+            System.out.println(time.toString());
             prepareNextRound();
             calculate();
         }
+        time.setTime(System.currentTimeMillis());
+        System.out.println("Time spend calculating in minutes: " + ((time.getTime() - START.getTime())/1000.00)/60.00);
+
     }
 
     /*
