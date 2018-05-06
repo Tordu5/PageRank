@@ -26,6 +26,8 @@ public class Crawler {
     private JsonObject webcrawler = new JsonObject();
     private JsonArray nodes = new JsonArray();
     private JsonArray links = new JsonArray();
+    private final Timestamp START = new Timestamp(System.currentTimeMillis());
+    private Timestamp time = new Timestamp(System.currentTimeMillis());
 
     public Crawler (int maxAllowedNodes) throws SQLException, ClassNotFoundException {
         dbAccess = DataAccess.getAccess();
@@ -44,6 +46,8 @@ public class Crawler {
             process(workQueue.poll());
         }
         writeJsonToFile();
+        time.setTime(System.currentTimeMillis());
+        logger("Time spend crawling in seconds: " + ((time.getTime() - START.getTime())/1000L));
         logger("finished");
     }
 
@@ -62,6 +66,8 @@ public class Crawler {
         }
 
         logger(proccesingCounter++ +"    :Processing on " + focusedUrl);
+        time.setTime(System.currentTimeMillis());
+        logger(time.toString());
         int baseID = getID(focusedUrl);
 
         for (String targetUrl: embededUrls){

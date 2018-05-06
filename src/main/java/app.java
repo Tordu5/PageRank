@@ -9,7 +9,7 @@ public class app {
 
 	public static void main(String[] args) {
 		try {
-			Crawler crawler = new Crawler(160);
+			Crawler crawler = new Crawler(20);
 			crawler.startAtSite("https://duckduckgo.com/");
 			new PageRank().calculatePageRank();
 		} catch (ClassNotFoundException e) {
