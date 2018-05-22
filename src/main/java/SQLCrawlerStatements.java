@@ -21,7 +21,7 @@ public class SQLCrawlerStatements {
         try {
             //Crawler
             findIdForUrlStatement = dbConnection.prepareStatement("SELECT id FROM Webcrawler WHERE url=?");
-            addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
+            addNewNodeStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Webcrawler values(?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
             createLinkStatement = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
             createLinkStatementBatch = dbConnection.prepareStatement("INSERT OR IGNORE INTO Link values(?,?);");
             increaseOutgoingStatement = dbConnection.prepareStatement("UPDATE Webcrawler SET Outgoing = Outgoing+1 WHERE id=?");

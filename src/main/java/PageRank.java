@@ -61,6 +61,9 @@ public class PageRank {
      */
     public void calculate() throws SQLException {
         ResultSet nodes = dbAccess.getWebcrawlerTable();
+        System.out.println("calculate");
+        long startTime = System.currentTimeMillis();
+        System.out.println("starting calculation");
         while (nodes.next()){
             int id = nodes.getInt("id");
             double vektor = nodes.getDouble("Vektor");
@@ -72,6 +75,9 @@ public class PageRank {
         if (isCalculationDamped()){
             dampPageRank();
         }
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("Calulation finished in :"+elapsedTime);
         return;
     }
 
@@ -149,5 +155,35 @@ public class PageRank {
             equalDistributionValue = (1.0/dbAccess.getNodesCount());
         }
         return equalDistributionValue;
+    }
+
+    public void preparePageRankCalculation(){
+        dbConnection = dbAccess.getConnection();
+
+        try {
+            dbConnection.createStatement().execute("Update Webcrawler set\n" +
+                    "vektor = pagerank,\n" +
+                    "value = pagerank/outgoing,\n" +
+                    "pagerank = 0");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pageRankCalculation(){
+        dbConnection = dbAccess.getConnection();
+
+        try {
+            dbConnection.createStatement().execute("update Webcrawler \n" +
+                    "set pagerank = (\n" +
+                    "\tSelect sum(value) \n" +
+                    "\tfrom Webcrawler w1 \n" +
+                    "\tjoin link l1 \n" +
+                    "\ton w1.id = l1.source \n" +
+                    "\twhere l1.target = Webcrawler.id\n" +
+                    ")\n");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
