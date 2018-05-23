@@ -17,6 +17,10 @@ public class SQLCrawlerStatements {
         initPreparedStatements();
     }
 
+    public Connection getConnection(){
+        return dbConnection;
+    }
+
     private void initPreparedStatements(){
         try {
             //Crawler

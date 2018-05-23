@@ -2,4 +2,4 @@
 /build/
 out/
 .idea
-*.db*
+*Data.db*

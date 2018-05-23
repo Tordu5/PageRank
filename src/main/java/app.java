@@ -33,8 +33,12 @@ public class app {
 		//	e.printStackTrace();
 		//}
 
+		startTime = System.currentTimeMillis();
+		new Master("https://duckduckgo.com/",40);
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		System.out.println("Duration :"+elapsedTime);
 
-		new Master("https://duckduckgo.com/",4);
 		//System.out.println("Starting Calculation");
 		//for (int i = 1;i<=100;i++) {
 		//	System.out.println("Calculation Preparation "+i);

@@ -1,9 +1,11 @@
 import org.jsoup.Jsoup;
+import org.jsoup.UncheckedIOException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -11,9 +13,10 @@ import java.util.concurrent.BlockingQueue;
 
 public class Worker extends Thread {
     Queue<String> workingQueue;
+    Connection connection;
     BlockingQueue<String> blockingWorkQueue;
     boolean isFilteredFromBadSites = false;
-    int maxNodes = 125;
+    int maxNodes = 1000;
     int addedNodesCounter=0;
     int emptyPollsCounter=0;
     String name;
@@ -22,6 +25,7 @@ public class Worker extends Thread {
     public Worker(String name,BlockingQueue<String> blockingWorkQueue){
         this.blockingWorkQueue = blockingWorkQueue;
         SQLCrawlerStatements = new SQLCrawlerStatements();
+        connection =SQLCrawlerStatements.getConnection();
         this.name = name;
     }
 
@@ -45,6 +49,10 @@ public class Worker extends Thread {
                     crawl(url);
                 } catch (SQLException e) {
                     //e.printStackTrace();
+                } catch (IllegalArgumentException e){
+                    continue;
+                } catch (UncheckedIOException e){
+                    continue;
                 }
             }
         }
@@ -60,6 +68,7 @@ public class Worker extends Thread {
             //e.printStackTrace();
         }
         if (linksList!=null) {
+            connection.setAutoCommit(false);
             for (String targetUrl : linksList) {
                 if (isFilteredFromBadSites) {
                     if (isLinkInvalid(targetUrl)) {
@@ -74,11 +83,13 @@ public class Worker extends Thread {
                     }
                     targetID = addNode(targetUrl);
                 }
-                createLink(sourceID, targetID);
+                createLinkBatch(sourceID, targetID);
 
 
             }
-            SQLCrawlerStatements.executeLinkBatch();
+            executeLinkBatch();
+            connection.commit();
+            //connection.setAutoCommit(true);
         }
     }
 
@@ -169,15 +180,15 @@ public class Worker extends Thread {
         for (Element link : links) {
             String linkUrl = link.attr("href");
 
+            if (linkUrl.isEmpty()||linkUrl.contains(" ")||linkUrl.contains("void(0)")){
+                continue;
+            }
             if (linkUrl.length() > 0) {
                 if (linkUrl.length() < 4) {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 } else if (!linkUrl.substring(0, 4).equals("http")) {
                     linkUrl = doc.baseUri() + linkUrl.substring(1);
                 }
-            }
-            if (linkUrl.isEmpty()||linkUrl.contains(" ")||linkUrl.contains("void(0);")){
-                continue;
             }
             urls.add(linkUrl);
         }
