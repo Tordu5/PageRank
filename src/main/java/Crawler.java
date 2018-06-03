@@ -77,7 +77,9 @@ public class Crawler {
                 targetID  = addNode(targetUrl);
                 workQueue.add(targetUrl);
             }
+/*
             createLink(sourceID,targetID);
+*/
 
 
             /*
@@ -167,14 +169,14 @@ public class Crawler {
     /*
     create a entry in the Link Table
      */
-    private void createLink(int sourceID,int targetID) throws SQLException {
+    /*private void createLink(int sourceID,int targetID) throws SQLException {
         dbAccess.createLink(sourceID,targetID);
 
         JsonObject link = new JsonObject();
         link.addProperty("source",sourceID);
         link.addProperty("target",targetID);
         links.add(link);
-    }
+    }*/
     private void createLinkBatch(int sourceID,int targetID) throws SQLException {
         dbAccess.createLinkBatch(sourceID,targetID);
 

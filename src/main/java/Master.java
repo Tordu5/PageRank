@@ -6,14 +6,17 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Master {
-    Queue<String> workQueue;
     BlockingQueue<String> blockingWorkQueue;
     ArrayList<Thread> threadList;
-    public Master(String startUrl,int threadCount){
-        createQueue(startUrl);
-        createThreads(threadCount);
-        forkThreads();
-        System.out.print("finish");
+
+    int amountOfThreads;
+    int maxAmountNodes;
+    String startUrl;
+
+    public Master(){
+        amountOfThreads = 4;
+        maxAmountNodes = 500;
+        startUrl = "duckduckgo.com";
     }
 
     private void forkThreads() {
@@ -29,7 +32,10 @@ public class Master {
     private void createThreads(int threadCount) {
         threadList = new ArrayList<>();
         for (int i=0;i<threadCount;i++){
-            Worker worker = new Worker("Thread " + i ,blockingWorkQueue);
+            Worker worker = new Worker();
+            worker.setWorkerName("worker "+i);
+            worker.setMaxNodes(maxAmountNodes/amountOfThreads);
+            worker.setQueue(blockingWorkQueue);
             threadList.add(worker);
             worker.start();
         }
@@ -44,5 +50,24 @@ public class Master {
         }
         blockingWorkQueue.add(startUrl);
         //workQueue.add(startUrl);
+    }
+
+    public void setAmountOfThreads(int amount){
+        this.amountOfThreads = amount;
+    }
+
+    public void setMaxNodes(int maxAmount){
+        this.maxAmountNodes = maxAmount;
+    }
+
+    public void setStartUrl (String url){
+        this.startUrl=url;
+    }
+
+    public void start() {
+        createQueue(startUrl);
+        createThreads(amountOfThreads);
+        forkThreads();
+        System.out.print("finish");
     }
 }

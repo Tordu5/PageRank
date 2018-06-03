@@ -12,21 +12,32 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class Worker extends Thread {
-    Queue<String> workingQueue;
     Connection connection;
-    BlockingQueue<String> blockingWorkQueue;
+
+    int maxNodes = 200;
     boolean isFilteredFromBadSites = false;
-    int maxNodes = 1000;
+
+    BlockingQueue<String> blockingWorkQueue;
     int addedNodesCounter=0;
     int emptyPollsCounter=0;
     String name;
-    SQLCrawlerStatements SQLCrawlerStatements;
+    DataAccess SQLCrawlerStatements;
 
-    public Worker(String name,BlockingQueue<String> blockingWorkQueue){
-        this.blockingWorkQueue = blockingWorkQueue;
-        SQLCrawlerStatements = new SQLCrawlerStatements();
+    public Worker(){
+        SQLCrawlerStatements = DataAccess.getAccess();
         connection =SQLCrawlerStatements.getConnection();
+    }
+
+    public void setWorkerName(String name) {
         this.name = name;
+    }
+
+    public void setMaxNodes(int maxAmount){
+        this.maxNodes = maxAmount;
+    }
+
+    public void setQueue(BlockingQueue Queue){
+        this.blockingWorkQueue = Queue;
     }
 
     @Override
@@ -88,13 +99,9 @@ public class Worker extends Thread {
 
             }
             executeLinkBatch();
-            connection.commit();
-            //connection.setAutoCommit(true);
+            //connection.commit();
+            connection.setAutoCommit(true);
         }
-    }
-
-    private boolean isLinkAlreadyAdded(String link) {
-        return SQLCrawlerStatements.isNodeAlreadyExisting(link);
     }
 
     private void createLinkBatch(int sourceID,int targetID){
@@ -108,16 +115,6 @@ public class Worker extends Thread {
 
     private void executeLinkBatch(){
         SQLCrawlerStatements.executeLinkBatch();
-    }
-
-    private void createLink(int sourceID,int targetID){
-        try {
-            SQLCrawlerStatements.createLink(sourceID,targetID);
-            //logger("Link :  " + sourceID + "->" + targetID + "    added");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("SQL EXCEPTION createLink");
-        }
     }
 
     private int addNode(String link) throws SQLException {
