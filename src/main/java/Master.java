@@ -1,7 +1,14 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -69,5 +76,57 @@ public class Master {
         createThreads(amountOfThreads);
         forkThreads();
         System.out.print("finish");
+    }
+
+    public void createVizualizationJson(){
+        JsonArray nodes = getNodesJson();
+        JsonArray links = getLinksJson();
+        JsonObject vizualisation = new JsonObject();
+        vizualisation.add("nodes",nodes);
+        vizualisation.add("links",links);
+        writeJsonToFile(vizualisation);
+    }
+
+    private JsonArray getNodesJson() {
+        JsonArray nodesArray = new JsonArray();
+        DataAccess dataAccess = DataAccess.getAccess();
+        try {
+            ResultSet nodesTable = dataAccess.getWebcrawlerTable();
+            while (nodesTable.next()){
+                JsonObject node = new JsonObject();
+                node.addProperty("id",nodesTable.getInt("id"));
+                node.addProperty("url",nodesTable.getString("url"));
+                nodesArray.add(node);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nodesArray;
+    }
+
+    private JsonArray getLinksJson() {
+        JsonArray linksArray = new JsonArray();
+        DataAccess dataAccess = DataAccess.getAccess();
+        try {
+            ResultSet linksTable = dataAccess.getLinkTable();
+            while (linksTable.next()){
+                JsonObject link = new JsonObject();
+                link.addProperty("source",linksTable.getInt("source"));
+                link.addProperty("target",linksTable.getInt("target"));
+                linksArray.add(link);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return linksArray;
+    }
+
+    private void writeJsonToFile(JsonObject json) {
+        try (Writer writer = new FileWriter("./src/main/resources/Webcrawler.json")) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(json, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

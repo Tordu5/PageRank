@@ -13,7 +13,7 @@
 }
 
 </style>
-<svg width="1560" height="1000"></svg>
+<svg width="1920" height="1080"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
@@ -51,7 +51,7 @@ d3.json("Webcrawler.json", function(error, graph) {
           .on("end", dragended));
 
   node.append("title")
-      .text(function(d) { return d.id; });
+      .text(function(d) { return d.id+":"+d.url; });
 
   simulation
       .nodes(graph.nodes)

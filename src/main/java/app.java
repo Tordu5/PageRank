@@ -20,13 +20,13 @@ public class app {
 
 
 
-		if (false){
+		if (true){
 			startTime = System.currentTimeMillis();
 
 			Master master = new Master();
 			master.setStartUrl("https://duckduckgo.com/");
-			master.setAmountOfThreads(1);
-			master.setMaxNodes(100);
+			master.setAmountOfThreads(4);
+			master.setMaxNodes(600);
 			master.start();
 
 			stopTime = System.currentTimeMillis();
@@ -35,9 +35,9 @@ public class app {
 		} else if (true){
 			startTime = System.currentTimeMillis();
 
-			pagerank.setCalculationDamped(true);
-			pagerank.setDampingFactor(0.78);
-			pagerank.setCompareDelta(0.000001);
+			pagerank.setCalculationDamped(false);
+			pagerank.setDampingFactor(0.85);
+			pagerank.setCompareDelta(0.005);
 			pagerank.calculate();
 
 			stopTime = System.currentTimeMillis();
@@ -45,6 +45,16 @@ public class app {
 			System.out.println("Duration :"+elapsedTime);
 
 		}
+
+		System.out.println("starting");
+		startTime = System.currentTimeMillis();
+
+		new Master().createVizualizationJson();
+
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		System.out.println(elapsedTime);
+		System.out.println("json created");
 
 	}
 
