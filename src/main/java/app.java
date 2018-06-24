@@ -20,7 +20,7 @@ public class app {
 
 
 
-		if (true){
+		if (false){
 			startTime = System.currentTimeMillis();
 
 			Master master = new Master();
@@ -32,7 +32,7 @@ public class app {
 			stopTime = System.currentTimeMillis();
 			elapsedTime = stopTime - startTime;
 			System.out.println("Duration :"+elapsedTime);
-		} else if (true){
+		} else if (false){
 			startTime = System.currentTimeMillis();
 
 			pagerank.setCalculationDamped(false);
