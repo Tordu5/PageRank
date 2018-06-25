@@ -71,11 +71,12 @@ public class Master {
         this.startUrl=url;
     }
 
-    public void start() {
+    public boolean start() {
         createQueue(startUrl);
         createThreads(amountOfThreads);
         forkThreads();
         System.out.print("finish");
+        return true;
     }
 
     public void createVizualizationJson(){
